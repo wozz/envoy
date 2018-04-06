@@ -101,6 +101,19 @@ _default_envoy_build_config = repository_rule(
     },
 )
 
+def _default_envoy_api_impl(ctx):
+    ctx.file("WORKSPACE", "")
+    ctx.file("BUILD.bazel", "")
+    ctx.symlink(ctx.path(ctx.attr.api).dirname.get_child("envoy"), "envoy")
+    ctx.symlink(ctx.path(ctx.attr.api).dirname.get_child("bazel"), "bazel")
+
+_default_envoy_api = repository_rule(
+    implementation = _default_envoy_api_impl,
+    attrs = {
+        "api": attr.label(default="@envoy//api:BUILD"),
+    },
+)
+
 # Python dependencies. If these become non-trivial, we might be better off using a virtualenv to
 # wrap them, but for now we can treat them as first-class Bazel.
 def _python_deps():
@@ -140,7 +153,10 @@ def _go_deps(skip_targets):
         _repository_impl("io_bazel_rules_go")
 
 def _envoy_api_deps():
-    _repository_impl("envoy_api")
+    # Treat Envoy's overall build config as an external repo, so projects that
+    # build Envoy as a subcomponent can easily override the config.
+    if "envoy_api" not in native.existing_rules().keys():
+        _default_envoy_api(name="envoy_api")
 
     native.bind(
         name = "http_api_protos",
