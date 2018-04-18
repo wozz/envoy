@@ -50,6 +50,7 @@ public:
     std::transform(resources.cbegin(), resources.cend(),
                    Protobuf::RepeatedPtrFieldBackInserter(&typed_resources),
                    MessageUtil::anyConvert<ResourceType>);
+    // TODO(mattklein123): fixfix comment about storing per-resource version info.
     callbacks_->onConfigUpdate(typed_resources);
     stats_.update_success_.inc();
     stats_.update_attempt_.inc();

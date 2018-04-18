@@ -51,9 +51,8 @@ public:
 
   // Router::RouteConfigProvider
   Router::ConfigConstSharedPtr config() override { return config_; }
-  const std::string versionInfo() const override { CONSTRUCT_ON_FIRST_USE(std::string, "static"); }
-  const envoy::api::v2::RouteConfiguration& configAsProto() const override {
-    return route_config_proto_;
+  absl::optional<ConfigInfo> configInfo() const override {
+    return ConfigInfo{route_config_proto_, "static"};
   }
 
 private:
@@ -100,10 +99,14 @@ public:
 
   // Router::RouteConfigProvider
   Router::ConfigConstSharedPtr config() override;
-  const envoy::api::v2::RouteConfiguration& configAsProto() const override {
-    return route_config_proto_;
+  absl::optional<ConfigInfo> configInfo() const override {
+    if (!config_info_) {
+      return {};
+    } else {
+      return ConfigInfo{route_config_proto_, config_info_.value().last_config_version_};
+    }
   }
-  const std::string versionInfo() const override { return subscription_->versionInfo(); }
+  //fixfixconst std::string versionInfo() const override { return subscription_->versionInfo(); }
 
   // Config::SubscriptionCallbacks
   void onConfigUpdate(const ResourceVector& resources) override;
@@ -117,6 +120,11 @@ private:
     ThreadLocalConfig(ConfigConstSharedPtr initial_config) : config_(initial_config) {}
 
     ConfigConstSharedPtr config_;
+  };
+
+  struct LastConfigInfo {
+    uint64_t last_config_hash_;
+    std::string last_config_version_;
   };
 
   RdsRouteConfigProviderImpl(
@@ -136,8 +144,7 @@ private:
   ThreadLocal::SlotPtr tls_;
   std::string config_source_;
   const std::string route_config_name_;
-  bool initialized_{};
-  uint64_t last_config_hash_{};
+  absl::optional<LastConfigInfo> config_info_;
   Stats::ScopePtr scope_;
   RdsStats stats_;
   std::function<void()> initialize_callback_;

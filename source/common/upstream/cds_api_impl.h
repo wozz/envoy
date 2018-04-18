@@ -31,7 +31,6 @@ public:
   void setInitializedCb(std::function<void()> callback) override {
     initialize_callback_ = callback;
   }
-  const std::string versionInfo() const override { return subscription_->versionInfo(); }
 
   // Config::SubscriptionCallbacks
   void onConfigUpdate(const ResourceVector& resources) override;
