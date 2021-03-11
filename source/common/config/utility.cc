@@ -254,7 +254,7 @@ Grpc::AsyncClientFactoryPtr Utility::factoryForGrpcApiConfigSource(
   return async_client_manager.factoryForGrpcService(
       grpc_service, scope,
       skip_cluster_check ? Grpc::AsyncClientFactoryClusterChecks::Skip
-                         : Grpc::AsyncClientFactoryClusterChecks::ValidateStaticDuringBootstrap);
+                         : Grpc::AsyncClientFactoryClusterChecks::ValidateStaticOnMainThread);
 }
 
 envoy::config::endpoint::v3::ClusterLoadAssignment Utility::translateClusterHosts(

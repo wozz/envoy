@@ -233,7 +233,7 @@ TEST(UtilityTest, FactoryForGrpcApiConfigSource) {
     EXPECT_CALL(async_client_manager,
                 factoryForGrpcService(
                     ProtoEq(expected_grpc_service), Ref(scope),
-                    Grpc::AsyncClientFactoryClusterChecks::ValidateStaticDuringBootstrap));
+                    Grpc::AsyncClientFactoryClusterChecks::ValidateStaticOnMainThread));
     Utility::factoryForGrpcApiConfigSource(async_client_manager, api_config_source, scope, false);
   }
 

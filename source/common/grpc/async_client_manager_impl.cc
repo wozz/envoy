@@ -35,7 +35,7 @@ AsyncClientFactoryImpl::AsyncClientFactoryImpl(Upstream::ClusterManager& cm,
   switch (checks) {
   case AsyncClientFactoryClusterChecks::Skip:
     return;
-  case AsyncClientFactoryClusterChecks::ValidateStaticDuringBootstrap: {
+  case AsyncClientFactoryClusterChecks::ValidateStaticOnMainThread: {
     ASSERT(Thread::MainThread::isMainThread());
     auto all_clusters = cm_.clusters();
     const auto& it = all_clusters.active_clusters_.find(cluster_name);

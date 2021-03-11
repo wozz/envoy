@@ -22,7 +22,7 @@ public:
 
 using AsyncClientFactoryPtr = std::unique_ptr<AsyncClientFactory>;
 
-enum class AsyncClientFactoryClusterChecks { Skip, ValidateStatic, ValidateStaticDuringBootstrap };
+enum class AsyncClientFactoryClusterChecks { Skip, ValidateStatic, ValidateStaticOnMainThread };
 
 // Singleton gRPC client manager. Grpc::AsyncClientManager can be used to create per-service
 // Grpc::AsyncClientFactory instances. All manufactured Grpc::AsyncClients must
@@ -37,7 +37,7 @@ public:
    * @param grpc_service envoy::config::core::v3::GrpcService configuration.
    * @param scope stats scope.
    * @param checks Skip will skip checking cluster validity, ValidateStatic checks for
-   * cluster presence and being statically configured, ValidateStaticDuringBootstrap checks for
+   * cluster presence and being statically configured, ValidateStaticOnMainThread checks for
    * cluster presence and being statically configured with methods that are not threadsafe but can
    * be used during bootstrap.
    * @return AsyncClientFactoryPtr factory for grpc_service.
